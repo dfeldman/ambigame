@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letter Tiles Game</title>
+    <title>Ambigame</title>
     <style>
         body {
             display: flex;
@@ -12,8 +12,12 @@
             font-family: Arial, sans-serif;
         }
         .tiles {
-            display: flex;
-            margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 90%; /* Adjust this value as needed */
+    margin-bottom: 20px;
+    margin-top: 20px;
         }
         button {
             font-size: 24px;
@@ -50,12 +54,11 @@
         <span id="bottomValidation" class="validation-message"></span>
     </div>
     <span id="winMessage">YOU WIN!</span>
+    <button onclick="backspace()">Backspace</button>
     <button onclick="clearWords()">Clear</button>
     <button onclick="restartGame()">Restart</button>
-    <button onclick="checkWords()">Check Words</button>
-    <button onclick="backspace()">Backspace</button>
 
-    <script src="words2.js"></script> <!-- Load the word set -->
+    <script src="words.js"></script> <!-- Load the word set -->
     <script src="frequencies.js"></script> <!-- Load the frequency distribution -->
     <script>
         const tilesContainer = document.getElementById("tiles");
@@ -64,6 +67,9 @@
         const topValidation = document.getElementById("topValidation");
         const bottomValidation = document.getElementById("bottomValidation");
         const winMessage = document.getElementById("winMessage");
+
+        const usedTilesStack = []; // Stack to keep track of used tiles
+
 
         function selectRandomTile(frequencies) {
             const totalFrequency = Object.values(frequencies).reduce((acc, freq) => acc + freq, 0);
@@ -82,6 +88,8 @@
             button.addEventListener("click", () => {
                 topWordField.value += tile[0].toUpperCase();
                 bottomWordField.value += tile[2].toUpperCase();
+		button.disabled = true;
+		usedTilesStack.push(button);
                 checkWords(); // Automatically check words after each tile is added
             });
             tilesContainer.appendChild(button);
@@ -101,6 +109,12 @@
             topValidation.textContent = '';
             bottomValidation.textContent = '';
             winMessage.style.display = 'none';
+        while (usedTilesStack.length > 0) {
+            const button = usedTilesStack.pop();
+            button.disabled = false; // Re-enable all used buttons
+        }
+
+
         }
 
         function restartGame() {
@@ -111,12 +125,15 @@
         function backspace() {
             if (topWordField.value.length > 0) {
                 topWordField.value = topWordField.value.slice(0, -1); // Remove the last character from the top word
-                checkWords(); // Check words after backspacing
             }
             if (bottomWordField.value.length > 0) {
                 bottomWordField.value = bottomWordField.value.slice(0, -1); // Remove the last character from the bottom word
-                checkWords(); // Check words after backspacing
             }
+	            if (usedTilesStack.length > 0) {
+            const button = usedTilesStack.pop();
+            button.disabled = false; // Re-enable the last used button
+        }
+            checkWords(); // Check words after backspacing
         }
 
         function checkWords() {

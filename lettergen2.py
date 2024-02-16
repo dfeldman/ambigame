@@ -21,10 +21,13 @@ def get_random_words(words, length):
         return None, None
     return random.sample(same_length_words, 2)
 
+def is_vowel(letter):
+    return letter in ['a', 'e', 'i', 'o', 'u']
+
 def update_histogram(histogram, word1, word2):
-    word2_rev = word2[::-1]
-    for c1, c2 in zip(word1, word2_rev):
-        histogram[f'{c1}/{c2}'] += 1
+    for c1, c2 in zip(word1, word2):
+        if not (is_vowel(c1) and is_vowel(c2)):
+            histogram[f'{c1}/{c2}'] += 1
 
 def process(directory, iterations=10000):
     histogram = Counter()
@@ -39,9 +42,10 @@ def process(directory, iterations=10000):
 
     # Update histogram based on random word pairs
     for _ in range(iterations):
-        length = random.randint(3, 7)
+        length = random.randint(3, 6)
         word1, word2 = get_random_words(all_words, length)
         if word1 and word2:
+#            print(word1, " ", word2)
             update_histogram(histogram, word1, word2)
 
     # Return the top 100 most used tiles
