@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Tiles Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .tiles {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+        .form-field {
+            margin: 10px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .validation-message {
+            font-size: 32px;
+            margin-left: 10px;
+        }
+        #winMessage {
+            font-size: 32px;
+            color: green;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="tiles" id="tiles"></div>
+    <div>
+        <input type="text" id="topWord" class="form-field" readonly>
+        <span id="topValidation" class="validation-message"></span>
+    </div>
+    <div>
+        <input type="text" id="bottomWord" class="form-field" readonly>
+        <span id="bottomValidation" class="validation-message"></span>
+    </div>
+    <span id="winMessage">YOU WIN!</span>
+    <button onclick="clearWords()">Clear</button>
+    <button onclick="restartGame()">Restart</button>
+    <button onclick="checkWords()">Check Words</button>
+    <button onclick="backspace()">Backspace</button>
+
+    <script src="words2.js"></script> <!-- Load the word set -->
+    <script src="frequencies.js"></script> <!-- Load the frequency distribution -->
+    <script>
+        const tilesContainer = document.getElementById("tiles");
+        const topWordField = document.getElementById("topWord");
+        const bottomWordField = document.getElementById("bottomWord");
+        const topValidation = document.getElementById("topValidation");
+        const bottomValidation = document.getElementById("bottomValidation");
+        const winMessage = document.getElementById("winMessage");
+
+        function selectRandomTile(frequencies) {
+            const totalFrequency = Object.values(frequencies).reduce((acc, freq) => acc + freq, 0);
+            let random = Math.random() * totalFrequency;
+            for (const [tile, freq] of Object.entries(frequencies)) {
+                random -= freq;
+                if (random <= 0) {
+                    return tile;
+                }
+            }
+        }
+
+        function createTile(tile) {
+            const button = document.createElement("button");
+            button.innerHTML = `${tile[0].toUpperCase()}<br>${tile[2].toUpperCase()}`;
+            button.addEventListener("click", () => {
+                topWordField.value += tile[0].toUpperCase();
+                bottomWordField.value += tile[2].toUpperCase();
+                checkWords(); // Automatically check words after each tile is added
+            });
+            tilesContainer.appendChild(button);
+        }
+
+        function createTiles() {
+            tilesContainer.innerHTML = ''; // Clear existing tiles
+            for (let i = 0; i < 20; i++) { // Create 10 tiles based on frequency
+                const tile = selectRandomTile(frequencies);
+                createTile(tile);
+            }
+        }
+
+        function clearWords() {
+            topWordField.value = '';
+            bottomWordField.value = '';
+            topValidation.textContent = '';
+            bottomValidation.textContent = '';
+            winMessage.style.display = 'none';
+        }
+
+        function restartGame() {
+            clearWords();
+            createTiles(); // Recreate tiles based on frequencies
+        }
+
+        function backspace() {
+            if (topWordField.value.length > 0) {
+                topWordField.value = topWordField.value.slice(0, -1); // Remove the last character from the top word
+                checkWords(); // Check words after backspacing
+            }
+            if (bottomWordField.value.length > 0) {
+                bottomWordField.value = bottomWordField.value.slice(0, -1); // Remove the last character from the bottom word
+                checkWords(); // Check words after backspacing
+            }
+        }
+
+        function checkWords() {
+            const topWord = topWordField.value.toLowerCase();
+            const bottomWord = bottomWordField.value.toLowerCase(); //bottomWordField.value.split('').reverse().join('').toLowerCase(); // Reverse the bottom word
+
+            const isTopWordValid = wordSet.has(topWord);
+            const isBottomWordValid = wordSet.has(bottomWord);
+
+            topValidation.textContent = isTopWordValid ? '✅' : '❌';
+            bottomValidation.textContent = isBottomWordValid ? '✅' : '❌';
+
+            winMessage.style.display = (isTopWordValid && isBottomWordValid) ? 'block' : 'none';
+        }
+
+        // Initialize game
+        createTiles();
+    </script>
+</body>
+</html>
+
