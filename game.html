@@ -26,10 +26,11 @@
             padding: 10px;
             border: 1px solid black;
             cursor: pointer;
+	    button: #eeeeee;
         }
         .form-field {
             margin: 10px;
-            font-size: 24px;
+            font-size: 48px;
             text-align: center;
         }
         .validation-message {
@@ -41,9 +42,14 @@
             color: green;
             display: none;
         }
+	h1 {font-size: 32px; color: black;}
+	.instructions { font-size: 16pt; color:black; background: #eeeeee; border: 1px solid black; max-width:60%; padding: 20px;}
     </style>
 </head>
 <body>
+    <h1>Ambigame</h1>
+    <div class="instructions"> This is a prototype of a game. The idea is that you'll have 3D <a href="https://en.wikipedia.org/wiki/Ambigram">Ambigram</a> letters, 
+	    somewhat like <a href="https://www.thingiverse.com/thing:4826437">this</a>. You'll have to arrange these ambigram letters to make two words at the same time. The purpose of this prototype is to try out the game. Try to make two words at the same time, using tiles that have two letters!</div>
     <div class="tiles" id="tiles"></div>
     <div>
         <input type="text" id="topWord" class="form-field" readonly>
