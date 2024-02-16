@@ -26,10 +26,10 @@ def is_vowel(letter):
 
 def update_histogram(histogram, word1, word2):
     for c1, c2 in zip(word1, word2):
-        if not (is_vowel(c1) and is_vowel(c2)):
+        if not (is_vowel(c1) and is_vowel(c2)) and not (c1=="-" or c2=="-"):
             histogram[f'{c1}/{c2}'] += 1
 
-def process(directory, iterations=10000):
+def process(directory, iterations=50000):
     histogram = Counter()
     all_words = []
 
@@ -49,7 +49,7 @@ def process(directory, iterations=10000):
             update_histogram(histogram, word1, word2)
 
     # Return the top 100 most used tiles
-    return histogram.most_common(100)
+    return histogram.most_common(1000)
 
 def main():
     directory = '/usr/share/dict'
